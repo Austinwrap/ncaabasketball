@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>College Basketball Trading Simulator - Level Up Edition</title>
   <style>
-    /* New Clean Color Theme: Dark navy with gold accents */
+    /* Clean Dark Navy Theme with Gold Accents */
     body {
       background: #0a0a23;
       color: #f0f0f0;
@@ -13,26 +14,30 @@
       padding: 0;
       overflow-x: hidden;
     }
-    /* Ticker Styles */
+    /* Ticker Styles - Updated for high contrast and mobile legibility */
     #ticker-top, #ticker-bottom {
       background: #000;
       border: 2px solid #ffd700;
       box-shadow: 0 0 15px #ffd700;
       overflow: hidden;
-      padding: 5px 0;
+      padding: 8px 0;
     }
     .ticker-content {
       white-space: nowrap;
       display: inline-block;
       padding-left: 100%;
       animation: tickerAnimation 12s linear infinite;
-      font-size: 1.3em;
+      font-size: 1.6em;
       text-transform: uppercase;
-      color: #ffd700;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px #000;
     }
     .ticker-content span {
       margin-right: 30px;
       padding: 0 10px;
+      /* Adding subtle glow for extra emphasis */
+      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
     }
     @keyframes tickerAnimation {
       0% { transform: translateX(0); }
@@ -115,6 +120,7 @@
     /* Responsive design */
     @media (max-width: 768px) {
       .section { margin: 10px; }
+      .ticker-content { font-size: 1.6em; }
     }
   </style>
 </head>
@@ -170,7 +176,7 @@
       </select>
       <label for="teamSelect">Select Team:</label>
       <select id="teamSelect">
-        <!-- Options populated via JS -->
+        <!-- Options will be populated via JS -->
       </select>
       <label for="teamShares">Number of Shares:</label>
       <input type="number" id="teamShares" min="1" value="1" />
@@ -211,7 +217,7 @@
       </select>
       <label for="optionTeamSelect">Select Team:</label>
       <select id="optionTeamSelect">
-        <!-- Options populated via JS -->
+        <!-- Options will be populated via JS -->
       </select>
       <label for="optionContracts">Number of Contracts (1 contract = 100 shares):</label>
       <input type="number" id="optionContracts" min="1" value="1" />
@@ -286,7 +292,7 @@
       "CINC":  { name: "Cincinnati Bearcats",       price: 110.00, prevPrice: 110.00 }
     };
 
-    // Portfolio: track shares owned for each team (initially 0)
+    // Portfolio: track shares owned (initially 0)
     let portfolio = {};
     for (const ticker in teams) {
       portfolio[ticker] = 0;
@@ -522,7 +528,7 @@
       updateExplanation(explanation);
       updateTicker();
       
-      // Add XP for every trade (e.g., 10 XP per trade)
+      // Add XP for every team trade (10 XP per trade)
       addXP(10);
     });
     
@@ -566,25 +572,25 @@
         payoff = intrinsicValue * 100 * contracts;
         profit = payoff - totalPremium;
         logMsg += `Call Option Payoff: $${payoff.toFixed(2)}<br>`;
-        explanation = `You bought a call option on ${teams[ticker].name} (${ticker}) giving you the right to buy at $${strike.toFixed(2)}. With the price at $${newPrice.toFixed(2)}, the option’s value is $${(intrinsicValue * 100 * contracts).toFixed(2)}. Your net result: $${profit.toFixed(2)}.`;
+        explanation = `You bought a call option on ${teams[ticker].name} (${ticker}) giving you the right to buy at $${strike.toFixed(2)}. With the price at $${newPrice.toFixed(2)}, the option’s value is $${(intrinsicValue * 100 * contracts).toFixed(2)}. Net result: $${profit.toFixed(2)}.`;
       } else if (action === "buy_put") {
         const intrinsicValue = Math.max(strike - newPrice, 0);
         payoff = intrinsicValue * 100 * contracts;
         profit = payoff - totalPremium;
         logMsg += `Put Option Payoff: $${payoff.toFixed(2)}<br>`;
-        explanation = `You bought a put option on ${teams[ticker].name} (${ticker}) giving you the right to sell at $${strike.toFixed(2)}. With the price at $${newPrice.toFixed(2)}, the option’s value is $${(intrinsicValue * 100 * contracts).toFixed(2)}. Your net result: $${profit.toFixed(2)}.`;
+        explanation = `You bought a put option on ${teams[ticker].name} (${ticker}) giving you the right to sell at $${strike.toFixed(2)}. With the price at $${newPrice.toFixed(2)}, the option’s value is $${(intrinsicValue * 100 * contracts).toFixed(2)}. Net result: $${profit.toFixed(2)}.`;
       } else if (action === "sell_call") {
         const intrinsicValue = Math.max(newPrice - strike, 0);
         cost = intrinsicValue * 100 * contracts;
         profit = totalPremium - cost;
         logMsg += `Call Option Obligation: $${cost.toFixed(2)}<br>`;
-        explanation = `You sold a call option on ${teams[ticker].name} (${ticker}) and received $${totalPremium.toFixed(2)} in premium. With the price at $${newPrice.toFixed(2)}, your cost is $${cost.toFixed(2)}. Net result: $${profit.toFixed(2)}.`;
+        explanation = `You sold a call option on ${teams[ticker].name} (${ticker}) and received $${totalPremium.toFixed(2)} in premium. With the price at $${newPrice.toFixed(2)}, your obligation cost is $${cost.toFixed(2)}. Net result: $${profit.toFixed(2)}.`;
       } else if (action === "sell_put") {
         const intrinsicValue = Math.max(strike - newPrice, 0);
         cost = intrinsicValue * 100 * contracts;
         profit = totalPremium - cost;
         logMsg += `Put Option Obligation: $${cost.toFixed(2)}<br>`;
-        explanation = `You sold a put option on ${teams[ticker].name} (${ticker}) and received $${totalPremium.toFixed(2)} in premium. With the price at $${newPrice.toFixed(2)}, your cost is $${cost.toFixed(2)}. Net result: $${profit.toFixed(2)}.`;
+        explanation = `You sold a put option on ${teams[ticker].name} (${ticker}) and received $${totalPremium.toFixed(2)} in premium. With the price at $${newPrice.toFixed(2)}, your obligation cost is $${cost.toFixed(2)}. Net result: $${profit.toFixed(2)}.`;
       }
       
       logMsg += `<strong>Net P/L:</strong> $${profit.toFixed(2)}<br>`;
@@ -601,7 +607,7 @@
       updateTicker();
       updatePortfolioDisplay();
       
-      // Add XP for the options trade as well
+      // Add XP for options trades (15 XP per trade)
       addXP(15);
     });
     
